@@ -832,16 +832,13 @@ if ('serviceWorker' in navigator) {
 <!-- Service Worker: paling akhir -->
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(function () {
-      console.log('SW OK');
-    })
-    .catch(function () {
-      console.log('SW FAIL');
-    });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('✅ Service Worker terdaftar:', reg.scope))
+      .catch(err => console.log('❌ SW error:', err));
+  });
 }
 </script>
-
 
 
 
