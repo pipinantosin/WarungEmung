@@ -1,56 +1,91 @@
-// ================= AUTO-VERSION CACHE =================
-const CACHE_NAME = 'warung-cache-' + new Date().toISOString().replace(/[-:.TZ]/g,'');
-const FILES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/css/main.css',
-  '/css/header.css',
-  '/css/hero.css',
-  '/css/search.css',
-  '/css/grid-produk.css',
-  '/css/navigasi.css',
-  '/css/popup-reg.css',
-  '/css/modal-cart.css',
-  '/css/cat-modal.css',
-  '/css/qty-addcart.css',
-  '/css/notif-cart.css',
-  '/css/toast.css',
-  '/css/text-scrol.css',
-  '/css/all.min.css',
-  '/js/data-loader.js',
-  '/js/main.js',
-  '/js/search.js',
-  '/js/cat-modal.js',
-  '/js/cart.js',
-  '/js/toast-audio.js',
-  '/js/register.js',
-  '/js/pwa.js'
+// ================= SAFE PWA CACHE (ANDROID 5+) =================
+// Jangan pakai const, let, arrow function, async/await
+
+var CACHE_NAME = 'warung-cache-v1';
+
+var FILES_TO_CACHE = [
+  './',
+  './index.html',
+
+  // ===== CSS =====
+  './css/ui.css',
+  './css/flash.css',
+  './css/search.css',
+  './css/qty-addcart.css',
+  './css/nama-alamat.css',
+  './css/popup-reg.css',
+  './css/produk-modal.css',
+  './css/cart-modal.css',
+  './css/cat-modal.css',
+  './css/akun-modal.css',
+  './css/toast.css',
+  './css/text-scrol.css',
+
+  // ===== CORE JS =====
+  './js/elementtt.js',
+  './js/data-loader.js',
+  './js/main.js',
+
+  // ===== UI / EFFECT =====
+  './js/flash.js',
+  './js/flash-sheet.js',
+
+  // ===== FEATURE =====
+  './js/sidebar.js',
+  './js/filter.js',
+  './js/search-autocomplete.js',
+  './js/produk-modal.js',
+  './js/cat-modal.js',
+  './js/cart-modal.js',
+  './js/akun-modal.js',
+  './js/cta-links.js',
+  './js/tentang.js',
+
+  // ===== AUDIO / AUTH =====
+  './js/toast-audio.js',
+  './js/register.js',
+
+  // ===== PI =====
+  './js/pi-integration.js',
+
+  // ===== PWA =====
+  './js/pwa.js'
 ];
 
-// Install: cache semua file
-self.addEventListener('install', evt => {
-  console.log('[SW] Install & caching files...');
-  evt.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
+// ================= INSTALL =================
+self.addEventListener('install', function (event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(function (cache) {
+      return cache.addAll(FILES_TO_CACHE);
+    })
   );
   self.skipWaiting();
 });
 
-// Activate: hapus cache lama
-self.addEventListener('activate', evt => {
-  console.log('[SW] Activate & clean old caches...');
-  evt.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.map(k => k !== CACHE_NAME ? caches.delete(k) : null))
-    )
+// ================= ACTIVATE =================
+self.addEventListener('activate', function (event) {
+  event.waitUntil(
+    caches.keys().then(function (keys) {
+      return Promise.all(
+        keys.map(function (key) {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    })
   );
   self.clients.claim();
 });
 
-// Fetch: cache-first, fallback ke network
-self.addEventListener('fetch', evt => {
-  if (evt.request.method !== 'GET') return;
-  evt.respondWith(
-    caches.match(evt.request).then(cached => cached || fetch(evt.request))
+// ================= FETCH =================
+self.addEventListener('fetch', function (event) {
+  if (event.request.method !== 'GET') return;
+
+  event.respondWith(
+    caches.match(event.request).then(function (response) {
+      return response || fetch(event.request);
+    })
   );
 });
+
