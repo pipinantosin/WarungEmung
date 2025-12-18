@@ -4,6 +4,31 @@
  * Unauthorized copying, modification, or distribution of this file is strictly prohibited.
  */
 
+// ================== HELPER SLUG URL ==================
+function getProdukSlug(){
+  // 1️⃣ prioritas query (?produk=...)
+  const q = new URLSearchParams(window.location.search).get('produk');
+  if(q) return q;
+
+  // 2️⃣ fallback hash lama (#produk/...)
+  if(location.hash.startsWith('#produk/')){
+    return location.hash.replace('#produk/', '');
+  }
+  return null;
+}
+
+// ================== AUTO REDIRECT HASH ➜ QUERY ==================
+(function redirectHashToQuery(){
+  if(location.hash.startsWith('#produk/')){
+    const slug = location.hash.replace('#produk/', '');
+    const url = new URL(window.location.href);
+    url.hash = '';
+    url.searchParams.set('produk', slug);
+    history.replaceState(null, '', url.toString());
+  }
+})();
+
+
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -105,11 +130,13 @@ card.appendChild(controlsWrapper);
 
 // === Klik card untuk buka modal detail + update URL ===
 card.addEventListener('click', () => {
-  if (p.slug) {
-    location.hash = `produk/${p.slug}`;
-  }
+  // update URL (SEO & share)
+  history.pushState(null, '', '?produk=' + p.slug);
+
+  // buka modal
   openProdukModal(p);
 });
+
 
 listEl.appendChild(card);
 });   // <==== PENUTUP forEach
@@ -221,8 +248,19 @@ fetch('data/produk.json')
     return res.json();
   })
 .then(data => {
-  products = shuffle([...data]); // simpan versi acak sebagai "products"
+  products = shuffle([...data]);
   render(products);
+
+  // ================== OPEN PRODUK DARI URL ==================
+  const slug = getProdukSlug();
+  if(slug){
+    const p = products.find(x => x.slug === slug);
+    if(p){
+      openProdukModal(p);
+    }
+  }
+})
+
   openFromHash(); // ⬅️ TAMBAHAN PENTING
 })
   .catch(err => console.error(err));
@@ -233,4 +271,4 @@ if(filterSelect){
   filterSelect.addEventListener('change', () => {
     applyFilters();  // hanya ini!
   });
-}
+                              }
