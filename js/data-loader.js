@@ -4,29 +4,9 @@
  * Unauthorized copying, modification, or distribution of this file is strictly prohibited.
  */
 
-// ================== HELPER SLUG URL ==================
 function getProdukSlug(){
-  // 1️⃣ prioritas query (?produk=...)
-  const q = new URLSearchParams(window.location.search).get('produk');
-  if(q) return q;
-
-  // 2️⃣ fallback hash lama (#produk/...)
-  if(location.hash.startsWith('#produk/')){
-    return location.hash.replace('#produk/', '');
-  }
-  return null;
+  return new URLSearchParams(window.location.search).get('produk');
 }
-
-// ================== AUTO REDIRECT HASH ➜ QUERY ==================
-(function redirectHashToQuery(){
-  if(location.hash.startsWith('#produk/')){
-    const slug = location.hash.replace('#produk/', '');
-    const url = new URL(window.location.href);
-    url.hash = '';
-    url.searchParams.set('produk', slug);
-    history.replaceState(null, '', url.toString());
-  }
-})();
 
 
 function shuffle(arr) {
@@ -130,10 +110,9 @@ card.appendChild(controlsWrapper);
 
 // === Klik card untuk buka modal detail + update URL ===
 card.addEventListener('click', () => {
-  // update URL (SEO & share)
-  history.pushState(null, '', '?produk=' + p.slug);
-
-  // buka modal
+  if (p.slug) {
+    history.pushState(null, '', '?produk=' + p.slug);
+  }
   openProdukModal(p);
 });
 
@@ -171,19 +150,7 @@ function renderProducts(list) {
 }
 
 // ================== OPEN PRODUK DARI URL HASH ==================
-function openFromHash() {
-  const hash = location.hash.replace('#', '');
-  if (!hash.startsWith('produk/')) return;
 
-  const slug = hash.split('/')[1];
-  const p = products.find(it => it.slug === slug);
-  if (p) {
-    openProdukModal(p);
-  }
-}
-
-// dengarkan perubahan URL
-window.addEventListener('hashchange', openFromHash);
 
 
 // ================== SHUFFLE ==================
@@ -247,23 +214,21 @@ fetch('data/produk.json')
     if (!res.ok) throw new Error('Gagal memuat produk.json');
     return res.json();
   })
-.then(data => {
-  products = shuffle([...data]);
-  render(products);
+  .then(data => {
+    products = shuffle([...data]);
+    render(products);
 
-  // ================== OPEN PRODUK DARI URL ==================
-  const slug = getProdukSlug();
-  if(slug){
-    const p = products.find(x => x.slug === slug);
-    if(p){
-      openProdukModal(p);
+    // ✅ buka produk dari query
+    const slug = getProdukSlug();
+    if (slug) {
+      const p = products.find(x => x.slug === slug);
+      if (p) {
+        openProdukModal(p);
+      }
     }
-  }
-})
-
-  openFromHash(); // ⬅️ TAMBAHAN PENTING
-})
+  })
   .catch(err => console.error(err));
+
 
 // === FILTER DROPDOWN HARGA ===
 const filterSelect = document.getElementById('filter-harga');
@@ -271,4 +236,4 @@ if(filterSelect){
   filterSelect.addEventListener('change', () => {
     applyFilters();  // hanya ini!
   });
-}
+  }
