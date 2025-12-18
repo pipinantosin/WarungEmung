@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Detail Produk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<!-- MODAL PRODUK (SAMA PERSIS) -->
+<div id="product-modal" class="pm-backdrop">
+  <div class="pm-sheet">
+    
+    <!-- TOPBAR -->
+    <div class="pm-topbar">
+      <button class="pm-back"><i class="fa fa-arrow-left"></i></button>
+      <button class="pm-close"><i class="fa fa-times"></i></button>
+    </div>
+
+    <div class="pm-handle"></div>
+
+    <!-- BAGIAN SCROLLABLE -->
+    <div class="pm-scroll">
+      <img class="pm-img" src="" alt="">
+      <div class="pm-title"></div>
+      <div class="pm-price"></div>
+      <div class="pm-desc"></div>
+    </div>
+
+ <!-- BAGIAN STICKY -->
+<div class="pm-sticky-bottom">
+
+  <!-- ROW: QTY + WISHLIST -->
+  <div class="pm-bottom-row">
+    <div class="pm-qty">
+      <button class="pm-minus">−</button>
+      <span class="pm-number">1</span>
+      <button class="pm-plus">+</button>
+    </div>
+
+    <button class="pm-wishlist">
+      <i class="fa fa-heart"></i>
+    </button>
+  </div>
+
+  <!-- ADD TO CART -->
+  <button class="pm-add">
+    <i class="fa fa-cart-plus"></i> Tambah ke Keranjang
+  </button>
+
+</div>
+
+  </div>
+</div>
+
+<script src="js/produk-modal.js"></script>
+
+<script>
+let products = [];
+
+fetch('data/produk.json')
+  .then(r => r.json())
+  .then(data => {
+    products = data;
+
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug');
+
+    if (!slug) return;
+
+    const p = products.find(it => it.slug === slug);
+    if (p) openProdukModal(p);
+  });
+</script>
+
+</body>
+</html>
