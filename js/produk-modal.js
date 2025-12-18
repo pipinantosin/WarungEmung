@@ -108,7 +108,7 @@ function closeProdukModal() {
   modalProdukAktif = false;
 
   lockPop = true;
-  history.replaceState(null, "");
+  history.replaceState(null, "", location.pathname);
   setTimeout(() => lockPop = false, 50);
 }
 
@@ -223,3 +223,4 @@ function generateDeskripsi(nama, kategori = "") {
 function capitalize(str) {
   return str.split(" ").map(s => s[0].toUpperCase() + s.slice(1)).join(" ");
 }
+
