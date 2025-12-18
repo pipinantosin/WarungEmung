@@ -103,13 +103,11 @@ controlsWrapper.appendChild(controls);
 controlsWrapper.appendChild(add);
 card.appendChild(controlsWrapper);
 
-// === Klik card untuk buka modal detail + update URL ===
+
 card.addEventListener('click', () => {
-  if (p.slug) {
-    location.hash = `produk/${p.slug}`;
-  }
-  openProdukModal(p);
+  window.location.href = `produk.html?slug=${p.slug}`;
 });
+
 
 listEl.appendChild(card);
 });   // <==== PENUTUP forEach
@@ -119,7 +117,7 @@ listEl.appendChild(card);
 
 
 
-let produkData = [];
+
 
 
 
@@ -127,36 +125,7 @@ let produkData = [];
 
 
 
-// fungsi untuk render produk ke #produk-list
-function renderProducts(list) {
-  const container = document.getElementById('produk-list');
-  container.innerHTML = '';
-  list.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <img src="${p.img}" alt="${p.name}">
-      <div class="title">${p.name}</div>
-      <div class="price">Rp ${p.price.toLocaleString()}</div>
-    `;
-    container.appendChild(card);
-  });
-}
 
-// ================== OPEN PRODUK DARI URL HASH ==================
-function openFromHash() {
-  const hash = location.hash.replace('#', '');
-  if (!hash.startsWith('produk/')) return;
-
-  const slug = hash.split('/')[1];
-  const p = products.find(it => it.slug === slug);
-  if (p) {
-    openProdukModal(p);
-  }
-}
-
-// dengarkan perubahan URL
-window.addEventListener('hashchange', openFromHash);
 
 
 // ================== SHUFFLE ==================
